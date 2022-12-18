@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Runtime.CompilerServices;
 using System.Text.Json.Nodes;
+using Windows.ApplicationModel;
 using Windows.UI;
 using Kemono.Contracts.Services;
 using Kemono.Helpers;
@@ -380,6 +381,7 @@ public class SettingsViewModel : InjectScopeViewModel
         _exportUrlsInContent = await Settings.ReadSettingAsync(nameof(ExportUrlsInContent), false);
         Username = await Settings.ReadSettingAsync<string>(nameof(Username), "");
         Password = await Settings.ReadSettingAsync<string>(nameof(Password), "");
+        Console.WriteLine($"Version: {RuntimeHelper.Version}");
         Console.WriteLine("Current Settings:");
         Console.WriteLine($"{nameof(DefaultPath)}={DefaultPath}");
         Console.WriteLine($"{nameof(ProxyMethod)}={ProxyMethod}");

@@ -12,7 +12,7 @@
     <Identity
             Name="F11DCF31-19DB-49A0-ABE9-957B6028BBA9"
             Publisher="CN=Dou"
-            Version="1.2.16.0"/>
+            Version="1.2.18.0"/>
 
     <Properties>
         <DisplayName>Kemono Downloader</DisplayName>
