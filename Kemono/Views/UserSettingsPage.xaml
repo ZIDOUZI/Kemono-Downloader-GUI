@@ -1,0 +1,32 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.UserSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Kemono.Models"
+    mc:Ignorable="d">
+
+    <StackPanel>
+
+        <models:SettingItem x:Uid="LoginItem">
+            <models:SettingItem.Trailer>
+                <ToggleSwitch IsOn="{x:Bind ViewModel.Login, Mode=TwoWay}" />
+            </models:SettingItem.Trailer>
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="UsernameItem" IsEnabled="{x:Bind ViewModel.Login, Mode=OneWay}">
+            <models:SettingItem.Trailer>
+                <TextBox Text="{x:Bind ViewModel.Username, Mode=TwoWay}" MinWidth="300" />
+            </models:SettingItem.Trailer>
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="PasswordItem" IsEnabled="{x:Bind ViewModel.Login, Mode=OneWay}">
+            <models:SettingItem.Trailer>
+                <TextBox Text="{x:Bind ViewModel.Password, Mode=TwoWay}" MinWidth="300" />
+            </models:SettingItem.Trailer>
+        </models:SettingItem>
+
+    </StackPanel>
+</Page>

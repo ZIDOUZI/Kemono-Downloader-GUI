@@ -1,0 +1,227 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Kemono.Models"
+    Loaded="OnLoaded"
+    mc:Ignorable="d">
+
+    <Page.KeyboardAccelerators>
+        <KeyboardAccelerator Key="D" Modifiers="Control" Invoked="ShowDebug" />
+    </Page.KeyboardAccelerators>
+
+    <Grid MaxWidth="600">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="48" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" x:Uid="SettingsTitle" Style="{StaticResource PageTitleStyle}" />
+
+        <ScrollViewer Grid.Row="1">
+            <StackPanel>
+
+                <TextBlock x:Uid="SettingsPersonalization" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+
+                    <models:SettingItem x:Uid="SettingTheme">
+                        <ComboBox x:Name="Theme" MinWidth="100" SelectionChanged="ChangeTheme">
+                            <ComboBoxItem x:Uid="SettingThemeDefault" Tag="Default" />
+                            <ComboBoxItem x:Uid="SettingThemeLight" Tag="Light" />
+                            <ComboBoxItem x:Uid="SettingThemeDark" Tag="Dark" />
+                        </ComboBox>
+                    </models:SettingItem>
+
+                    <models:SettingExpander x:Uid="Backdrop">
+                        <models:SettingExpander.Trailer>
+                            <StackPanel Orientation="Horizontal">
+                                <ComboBox x:Name="Backdrop" SelectedIndex="{x:Bind ViewModel.Backdrop, Mode=TwoWay}" />
+                                <Button Click="ResetBackdrop" Margin="8, 0">Reset</Button>
+                            </StackPanel>
+                        </models:SettingExpander.Trailer>
+
+                        <Grid ColumnDefinitions="Auto, Auto" RowDefinitions="Auto, Auto, Auto, Auto">
+                            <Slider Grid.Row="0" Value="{x:Bind ViewModel.LightLuminosityOpacity, Mode=TwoWay}"
+                                    Maximum="1" StepFrequency="0.01" Width="150" Header="LightLuminosityOpacity"
+                                    Margin="8" />
+                            <Slider Grid.Row="1" Value="{x:Bind ViewModel.LightTintOpacity, Mode=TwoWay}"
+                                    Maximum="1" StepFrequency="0.01" Width="150" Header="LightTintOpacity" Margin="8" />
+                            <SplitButton Grid.Row="2">
+                                <Border CornerRadius="4,0,0,4" Width="32" Height="32">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{x:Bind ViewModel.LightFallbackColor, Mode=TwoWay}" />
+                                    </Border.Background>
+                                </Border>
+                                <SplitButton.Flyout>
+                                    <Flyout>
+                                        <ColorPicker Color="{x:Bind ViewModel.LightFallbackColor, Mode=TwoWay}" />
+                                    </Flyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+                            <SplitButton Grid.Row="3">
+                                <Border CornerRadius="4,0,0,4" Width="32" Height="32">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{x:Bind ViewModel.LightTintColor, Mode=TwoWay}" />
+                                    </Border.Background>
+                                </Border>
+                                <SplitButton.Flyout>
+                                    <Flyout>
+                                        <ColorPicker Color="{x:Bind ViewModel.LightTintColor, Mode=TwoWay}" />
+                                    </Flyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+
+                            <Slider Grid.Column="1" Grid.Row="0" Maximum="1" StepFrequency="0.01" Width="150"
+                                    Header="DarkLuminosityOpacity" Margin="8"
+                                    Value="{x:Bind ViewModel.DarkLuminosityOpacity, Mode=TwoWay}" />
+                            <Slider Grid.Column="1" Grid.Row="1" Maximum="1" StepFrequency="0.01" Width="150"
+                                    Header="DarkTintOpacity" Margin="8"
+                                    Value="{x:Bind ViewModel.DarkTintOpacity, Mode=TwoWay}" />
+                            <SplitButton Grid.Column="1" Grid.Row="2">
+                                <Border CornerRadius="4,0,0,4" Width="32" Height="32">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{x:Bind ViewModel.DarkFallbackColor, Mode=TwoWay}" />
+                                    </Border.Background>
+                                </Border>
+                                <SplitButton.Flyout>
+                                    <Flyout>
+                                        <ColorPicker Color="{x:Bind ViewModel.DarkFallbackColor, Mode=TwoWay}" />
+                                    </Flyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+                            <SplitButton Grid.Column="1" Grid.Row="3">
+                                <Border CornerRadius="4,0,0,4" Width="32" Height="32">
+                                    <Border.Background>
+                                        <SolidColorBrush Color="{x:Bind ViewModel.DarkTintColor, Mode=TwoWay}" />
+                                    </Border.Background>
+                                </Border>
+                                <SplitButton.Flyout>
+                                    <Flyout>
+                                        <ColorPicker Color="{x:Bind ViewModel.DarkTintColor, Mode=TwoWay}" />
+                                    </Flyout>
+                                </SplitButton.Flyout>
+                            </SplitButton>
+                        </Grid>
+                    </models:SettingExpander>
+
+                    <models:SettingItem x:Uid="EnableBackdropInPages">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.EnableBackdropInPages, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                </StackPanel>
+
+                <TextBlock x:Uid="SettingsDefaultOption" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+
+                    <models:SettingItem x:Uid="DefaultDownloadPath">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBox x:Uid="DefaultDownloadPathText" Text="{x:Bind ViewModel.DefaultPath, Mode=TwoWay}"
+                                     VerticalAlignment="Bottom" MinWidth="200" Margin="8, 0" />
+                            <Button x:Uid="DefaultDownloadPathButton" VerticalAlignment="Bottom" Margin="8, 0"
+                                    Click="ChooseFolder" />
+                        </StackPanel>
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="DefaultUseRpc">
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleSwitch x:Uid="DefaultUseRpcSwitch" IsOn="{x:Bind ViewModel.UseRpc, Mode=TwoWay}" />
+                            <Button x:Uid="CheckRpcHost" Click="CheckRpc" />
+                        </StackPanel>
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="DefaultRpcHost">
+                        <TextBox HorizontalAlignment="Left" MinWidth="200" Text="{x:Bind ViewModel.Host,Mode=TwoWay}"
+                                 PlaceholderText="http://localhost:6800" />
+                    </models:SettingItem>
+
+                    <models:SettingItem PrimaryText="RPC token">
+                        <TextBox HorizontalAlignment="Left" MinWidth="200" Text="{x:Bind ViewModel.Token, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingExpander x:Name="DefaultProxy" x:Uid="DefaultProxy">
+                        <RadioButtons SelectedIndex="{x:Bind ViewModel.ProxyMethod, Mode=TwoWay}"
+                                      HorizontalAlignment="Stretch">
+                            <RadioButton x:Uid="DefaultProxyDisabled" />
+                            <RadioButton x:Uid="DefaultProxySystemDefault" />
+                            <RadioButton>
+                                <TextBox x:Uid="DefaultProxyCustomText" x:Name="ProxyText" MinWidth="300"
+                                         Text="{x:Bind ViewModel.Proxy, Mode=TwoWay}" />
+                            </RadioButton>
+                        </RadioButtons>
+                    </models:SettingExpander>
+
+                    <models:SettingItem x:Uid="DefaultPattern">
+                        <TextBox HorizontalAlignment="Left" MinWidth="200" CharacterCasing="Lower"
+                                 Text="{x:Bind ViewModel.Pattern, Mode=TwoWay}" CharacterSpacing="-50"
+                                 FontFamily="Assets\Fonts\#Jetbrains Mono" FontSize="14" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="DefaultDateFormat">
+                        <TextBox Text="{x:Bind ViewModel.DateFormat, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="DefaultUseProxyInAria2">
+                        <ToggleSwitch x:Uid="DefaultUseProxyInAria2Switch"
+                                      IsOn="{x:Bind ViewModel.UseProxyInAria2, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="RememberAccount">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.RememberAccount, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="ClearSucceedInfos">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.ClearSucceedInfos, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                </StackPanel>
+
+                <TextBlock x:Uid="OtherOptions" Style="{ThemeResource SubtitleTextBlockStyle}" />
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}">
+
+                    <models:SettingItem>
+                        <StackPanel Orientation="Horizontal">
+                            <Button x:Uid="ImportSettings" Click="ImportSettings" Margin="8, 4" />
+                            <Button x:Uid="ExportSettings" Click="ExportSettings" Margin="8, 4" />
+                            <Button x:Uid="OpenDataFolder" Click="OpenDataFolder" Margin="8, 4" />
+                            <Button x:Uid="ExportLatestLog" Click="ExportLatestLog" Margin="8, 4" />
+                        </StackPanel>
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="DownloadDirectly">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.DownloadDirectly, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="ExportUrls">
+                        <ToggleSwitch IsOn="{x:Bind ViewModel.ExportUrlsInContent, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                    <models:SettingItem x:Uid="ShowNotification" IsEnabled="False">
+                        <ToggleSwitch x:Uid="ShowNotificationSwitch"
+                                      IsOn="{x:Bind ViewModel.ShowNotification, Mode=TwoWay}" />
+                    </models:SettingItem>
+
+                </StackPanel>
+
+                <TextBlock Text="Debug" Style="{ThemeResource SubtitleTextBlockStyle}"
+                           Visibility="{x:Bind ViewModel.Debug, Mode=OneWay}" />
+
+                <StackPanel Margin="{StaticResource SmallTopBottomMargin}"
+                            Visibility="{x:Bind ViewModel.Debug, Mode=OneWay}">
+                    <models:SettingItem>
+                        <Button Click="WriteConsole">写入console</Button>
+                    </models:SettingItem>
+                    <models:SettingItem>
+                        <TextBlock x:Name="AppDataPath" />
+                    </models:SettingItem>
+                </StackPanel>
+
+            </StackPanel>
+        </ScrollViewer>
+    </Grid>
+</Page>

@@ -1,0 +1,49 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.DownloadSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Kemono.Models"
+    mc:Ignorable="d">
+
+    <StackPanel Margin="4">
+        <models:SettingItem x:Uid="\DownloadSettingsPage\Overwrite">
+            <ToggleSwitch x:Uid="OnOffToggle" IsOn="{x:Bind Vm.Overwrite, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\DownloadSettingsPage\UseRpc">
+            <ToggleSwitch x:Uid="OnOffToggle" IsOn="{x:Bind Vm.UseRpc,Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\DownloadSettingsPage\RpcHost" IsEnabled="{x:Bind Vm.UseRpc, Mode=OneWay}">
+            <TextBox HorizontalAlignment="Left" PlaceholderText="http://127.0.0.1:6800" MinWidth="200"
+                     Text="{x:Bind Vm.Host,Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem PrimaryText="RPC token" IsEnabled="{x:Bind Vm.UseRpc, Mode=OneWay}">
+            <TextBox x:Uid="\DownloadSettingsPage\RpcTokenBox" HorizontalAlignment="Left" MinWidth="200"
+                     Text="{x:Bind Vm.Token, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\DownloadSettingsPage\DownloadPath">
+            <StackPanel Orientation="Horizontal">
+                <TextBox x:Uid="\DownloadSettingsPage\DownloadPathBox" Text="{x:Bind Vm.DefaultPath, Mode=TwoWay}"
+                         VerticalAlignment="Bottom" MinWidth="200" Margin="8, 0" />
+                <Button x:Uid="\DownloadSettingsPage\DownloadPathButton" Click="ChooseFolder"
+                        VerticalAlignment="Bottom" Margin="8, 0" x:Name="DefaultPath" />
+            </StackPanel>
+        </models:SettingItem>
+
+        <models:SettingExpander HorizontalAlignment="Stretch" x:Uid="\DownloadSettingsPage\Pattern">
+            <models:SettingExpander.Trailer>
+                <TextBox Grid.Column="1" MaxWidth="700" Text="{x:Bind Builder.Pattern,Mode=TwoWay}"
+                         CharacterCasing="Lower" HorizontalAlignment="Right" CharacterSpacing="-50"
+                         FontFamily="Assets\Fonts\#Jetbrains Mono" FontSize="14" />
+            </models:SettingExpander.Trailer>
+            <TextBlock x:Uid="\DownloadSettingsPage\Introduction" FontFamily="Assets\Fonts\#Jetbrains Mono" />
+        </models:SettingExpander>
+
+    </StackPanel>
+</Page>

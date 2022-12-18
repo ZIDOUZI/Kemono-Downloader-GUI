@@ -1,0 +1,54 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.FilterPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Kemono.Models"
+    mc:Ignorable="d">
+
+    <Grid ColumnDefinitions="3*, 2*">
+        <Grid Margin="8" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="Auto, Auto">
+
+            <StackPanel Margin="0,8">
+                <TextBlock>图像</TextBlock>
+                <Button Tag="0" Click="ImageSelectionChanged">不下载</Button>
+                <Button Tag="1" Click="ImageSelectionChanged" IsEnabled="{x:Bind ViewModel.Downloader.HaveRpc}">由RPC</Button>
+                <Button Tag="2" Click="ImageSelectionChanged">由App</Button>
+            </StackPanel>
+            <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,8">
+                <TextBlock>文件</TextBlock>
+                <Button Tag="0" Click="FileSelectionChanged">不下载</Button>
+                <Button Tag="1" Click="FileSelectionChanged" IsEnabled="{x:Bind ViewModel.Downloader.HaveRpc}">由RPC</Button>
+                <Button Tag="2" Click="FileSelectionChanged">由App</Button>
+            </StackPanel>
+            <Grid Row="1" Column="0" RowDefinitions="Auto, Auto, Auto" Margin="0,8">
+                <TextBlock>日期上限</TextBlock>
+                <DatePicker x:Name="BeforeDate" Grid.Row="1" SelectedDateChanged="FreshDate" Width="300" />
+                <TimePicker x:Name="BeforeTime" Grid.Row="2" SelectedTimeChanged="FreshTime" />
+            </Grid>
+            <Grid Row="1" Column="1" RowDefinitions="Auto, Auto, Auto" Margin="0,8">
+                <TextBlock>日期下限</TextBlock>
+                <DatePicker x:Name="AfterDate" Grid.Row="1" SelectedDateChanged="FreshDate" Width="300" />
+                <TimePicker x:Name="AfterTime" Grid.Row="2" SelectedTimeChanged="FreshTime" />
+            </Grid>
+            <Button Grid.Row="2" Margin="0,8" Click="SelectUndownloaded" IsEnabled="False">仅勾选未下载(尚未实现)</Button>
+            <Button Grid.Row="3" Grid.Column="0" Click="GoBack">确认筛选</Button>
+        </Grid>
+        <TreeView Grid.Column="1" ScrollViewer.IsDeferredScrollingEnabled="True" ItemsSource="{x:Bind _items}"
+                  SelectionMode="None" CanDragItems="False" Margin="8">
+            <TreeView.ItemTemplate>
+                <DataTemplate x:DataType="models:TreeItem">
+                    <TreeViewItem ItemsSource="{x:Bind Children}" Content="{x:Bind Content}" AllowDrop="False"
+                                  IsExpanded="True" CanDrag="False" />
+                </DataTemplate>
+            </TreeView.ItemTemplate>
+        </TreeView>
+    </Grid>
+
+    <Page.Resources>
+
+    </Page.Resources>
+
+</Page>

@@ -1,0 +1,99 @@
+﻿<Page
+    x:Class="Kemono.Views.MainPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:Kemono.ViewModels"
+    mc:Ignorable="d"
+    Loaded="OnLaunched">
+
+    <TabView AddTabButtonClick="AddTab"
+             CloseButtonOverlayMode="OnPointerOver"
+             AllowDrop="True"
+             TabCloseRequested="CloseTab"
+             HorizontalAlignment="Stretch"
+             VerticalAlignment="Stretch"
+             x:Name="Root">
+
+        <TabView.TabItemTemplate>
+            <DataTemplate x:DataType="vm:TabItemViewModel">
+                <TabViewItem Content="{x:Bind RootFrame}" Header="{x:Bind Text, Mode=OneWay}">
+                    <TabViewItem.IconSource>
+                        <SymbolIconSource Symbol="Document" />
+                    </TabViewItem.IconSource>
+                </TabViewItem>
+            </DataTemplate>
+        </TabView.TabItemTemplate>
+
+        <TabView.KeyboardAccelerators>
+            <KeyboardAccelerator Key="T" Modifiers="Control" Invoked="AddTabKeyboard" />
+            <KeyboardAccelerator Key="W" Modifiers="Control" Invoked="CloseTabKeyboard" />
+        </TabView.KeyboardAccelerators>
+
+        <!--<TabView.TabStripHeader>
+			<Grid x:Name="ShellTitlebarInset" Background="Transparent" />
+		</TabView.TabStripHeader>-->
+
+        <TabView.TabStripFooter>
+            <Grid ColumnDefinitions="30, *">
+
+                <Button Width="30" Height="24" Margin="-1,3,0,3" Padding="0" BorderThickness="0"
+                        Background="Transparent" VerticalAlignment="Bottom" Grid.Column="0"
+                        Style="{ThemeResource ButtonRevealStyle}">
+
+                    <ToolTipService.ToolTip>
+                        <ToolTip x:Uid="SettingButtonToolTip" />
+                    </ToolTipService.ToolTip>
+
+                    <Viewbox Width="12" Height="12">
+                        <FontIcon Glyph="&#xE70D;" />
+                    </Viewbox>
+
+                    <Button.Flyout>
+                        <MenuFlyout>
+                            <MenuFlyoutItem x:Uid="SettingButton" Click="NavigateToSettings" Icon="Setting" />
+
+                            <MenuFlyoutItem x:Uid="AboutButton" Command="{x:Bind ShowDialog}"
+                                            CommandParameter="{x:Bind AboutDialog}" Icon="Help" />
+
+                        </MenuFlyout>
+                    </Button.Flyout>
+
+                </Button>
+                <Grid Grid.Column="1" x:Name="CustomDragRegion" Background="Transparent" Margin="0, 0, 120, 0"
+                      MinWidth="40" />
+            </Grid>
+        </TabView.TabStripFooter>
+
+        <ContentDialog x:Name="AboutDialog" x:Uid="AboutDialog" DefaultButton="Primary" XamlRoot="{x:Bind XamlRoot}"
+                       Style="{ThemeResource DefaultContentDialogStyle}">
+            <StackPanel Margin="{StaticResource XSmallTopMargin}">
+
+                <TextBlock Text="{x:Bind _versionDescription}"
+                           Style="{ThemeResource BodyTextBlockStyle}" />
+
+                <TextBlock
+                    x:Uid="AboutDescription"
+                    Margin="{StaticResource XSmallTopMargin}"
+                    Style="{ThemeResource BodyTextBlockStyle}" />
+
+                <HyperlinkButton x:Uid="PrivacyTermsLink"
+                                 Margin="{StaticResource SettingsPageHyperlinkButtonMargin}" />
+
+                <Button x:Uid="SponsorText" Margin="{StaticResource XSmallTopMargin}">
+                    <Button.Flyout>
+                        <Flyout>
+                            <StackPanel Orientation="Horizontal">
+                                <Image Source="/Assets/photo_2022-09-18_15-12-41.jpg" Width="150" />
+                                <Image Source="/Assets/photo_2022-09-18_15-13-05.jpg" Width="150" />
+                            </StackPanel>
+                        </Flyout>
+                    </Button.Flyout>
+                </Button>
+
+            </StackPanel>
+        </ContentDialog>
+
+    </TabView>
+</Page>

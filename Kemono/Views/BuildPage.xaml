@@ -1,0 +1,51 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.BuildPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:helpers="using:Kemono.Helpers"
+    mc:Ignorable="d">
+
+    <Page.Transitions>
+        <EntranceThemeTransition />
+    </Page.Transitions>
+
+    <NavigationView
+        x:Name="NavigationViewControl"
+        Canvas.ZIndex="0"
+        IsBackButtonVisible="Collapsed"
+        IsBackEnabled="{x:Bind ViewModel.IsBackEnabled, Mode=OneWay}"
+        SelectedItem="{x:Bind ViewModel.Selected, Mode=OneWay}"
+        AlwaysShowHeader="True"
+        IsSettingsVisible="False"
+        ExpandedModeThresholdWidth="1280"
+        PaneDisplayMode="Left">
+
+        <NavigationView.KeyboardAccelerators>
+            <KeyboardAccelerator Key="Enter" Modifiers="Control" Invoked="BuildKeyboard" />
+            <KeyboardAccelerator Key="Left" Modifiers="Menu" Invoked="GoBackKey" />
+            <!-- <KeyboardAccelerator Key="GoBack" Invoked="GoBackKey" /> -->
+            <KeyboardAccelerator Key="Right" Modifiers="Menu" Invoked="GoForwardKey" />
+            <!-- <KeyboardAccelerator Key="GoForward" Invoked="GoForwardKey" /> -->
+        </NavigationView.KeyboardAccelerators>
+
+        <NavigationView.MenuItems>
+            <NavigationViewItem x:Uid="ShellDownload" Icon="Download"
+                                helpers:NavigationHelper.NavigateTo="Kemono.Views.DownloadSettingsPage" />
+            <NavigationViewItem x:Uid="ShellUser" Icon="OtherUser"
+                                helpers:NavigationHelper.NavigateTo="Kemono.Views.UserSettingsPage" />
+            <NavigationViewItem x:Uid="ShellClient" Icon="Link"
+                                helpers:NavigationHelper.NavigateTo="Kemono.Views.ClientSettingsPage" />
+        </NavigationView.MenuItems>
+
+        <Grid VerticalAlignment="Stretch" RowDefinitions="*, Auto">
+            <ScrollViewer VerticalAlignment="Stretch">
+                <Frame x:Name="NavigationFrame" Height="Auto" />
+            </ScrollViewer>
+            <Button Grid.Row="1" Click="BuildAndNavigate" HorizontalAlignment="Right" Margin="8" x:Uid="BuildButton" />
+        </Grid>
+
+    </NavigationView>
+</Page>

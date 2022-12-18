@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Kemono (Package)": {
+      "commandName": "MsixPackage"
+    },
+    "Kemono (Unpackaged)": {
+      "commandName": "Project"
+    }
+  }
+}

@@ -1,0 +1,281 @@
+﻿<root>
+	<xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+	            xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+		<xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+		<xsd:element name="root" msdata:IsDataSet="true">
+			<xsd:complexType>
+				<xsd:choice maxOccurs="unbounded">
+					<xsd:element name="metadata">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" />
+							</xsd:sequence>
+							<xsd:attribute name="name" use="required" type="xsd:string" />
+							<xsd:attribute name="type" type="xsd:string" />
+							<xsd:attribute name="mimetype" type="xsd:string" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="assembly">
+						<xsd:complexType>
+							<xsd:attribute name="alias" type="xsd:string" />
+							<xsd:attribute name="name" type="xsd:string" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="data">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+								<xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+							<xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+							<xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+							<xsd:attribute ref="xml:space" />
+						</xsd:complexType>
+					</xsd:element>
+					<xsd:element name="resheader">
+						<xsd:complexType>
+							<xsd:sequence>
+								<xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+							</xsd:sequence>
+							<xsd:attribute name="name" type="xsd:string" use="required" />
+						</xsd:complexType>
+					</xsd:element>
+				</xsd:choice>
+			</xsd:complexType>
+		</xsd:element>
+	</xsd:schema>
+	<resheader name="resmimetype">
+		<value>text/microsoft-resx</value>
+	</resheader>
+	<resheader name="version">
+		<value>1.3</value>
+	</resheader>
+	<resheader name="reader">
+		<value>
+			System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+			PublicKeyToken=b77a5c561934e089
+		</value>
+	</resheader>
+	<resheader name="writer">
+		<value>
+			System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral,
+			PublicKeyToken=b77a5c561934e089
+		</value>
+	</resheader>
+	<data name="AppDisplayName" xml:space="preserve">
+    <value>Kemono下载器</value>
+  </data>
+    <data name="OnOffToggle.OnContent" xml:space="preserve">
+    <value>开启</value>
+  </data>
+    <data name="OnOffToggle.OffContent" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+	<data name="AppDescription" xml:space="preserve">
+    <value>一个简易的kemono站下载器</value>
+  </data>
+	<data name="ShellBuild.Content" xml:space="preserve">
+    <value>构建</value>
+        <comment>Page title for TabItemPage</comment>
+  </data>
+	<data name="DownloadPage" xml:space="preserve">
+    <value>下载</value>
+        <comment>Page title for DownloadPage</comment>
+  </data>
+	<data name="FilterTitle.Text" xml:space="preserve">
+    <value>过滤</value>
+        <comment>Page title for FilterPage</comment>
+  </data>
+	<data name="ShellDownload.Content" xml:space="preserve">
+    <value>下载选项</value>
+        <comment>Page title for DownloadSettingsPage</comment>
+  </data>
+	<data name="ShellUser.Content" xml:space="preserve">
+    <value>用户选项</value>
+        <comment>Page title for UserSettingsPage</comment>
+  </data>
+	<data name="ShellClient.Content" xml:space="preserve">
+    <value>客户端选项</value>
+        <comment>Page title for ClientSettingsPage</comment>
+  </data>
+	<data name="SettingsPersonalization.Text" xml:space="preserve">
+    <value>个性化</value>
+  </data>
+	<data name="SettingTheme.PrimaryText" xml:space="preserve">
+    <value>主题</value>
+  </data>
+    <data name="DefaultDownloadPath.PrimaryText" xml:space="preserve">
+    <value>默认下载路径</value>
+  </data>
+    <data name="DefaultDownloadPathText.PlaceholderText" xml:space="preserve">
+    <value>选择或输入默认下载路径, 如不选择下载至文档文件夹</value>
+  </data>
+    <data name="ExportUrls.PrimaryText" xml:space="preserve">
+    <value>导出url</value>
+  </data>
+    <data name="DefaultDateFormat.PrimaryText" xml:space="preserve">
+    <value>默认日期格式</value>
+  </data>
+    <data name="ExportUrls.SecondaryText" xml:space="preserve">
+    <value>每次下载后将关联内容中的url导出到根目录</value>
+  </data>
+    <data name="DefaultDateFormat.SecondaryText" xml:space="preserve">
+    <value>在命名方式中设置默认日期格式</value>
+  </data>
+    <data name="SettingsDefaultOption.Text" xml:space="preserve">
+    <value>默认选项</value>
+  </data>
+    <data name="DefaultProxy.PrimaryText" xml:space="preserve">
+    <value>代理</value>
+  </data>
+    <data name="DefaultPattern.PrimaryText" xml:space="preserve">
+    <value>命名方式</value>
+  </data>
+    <data name="DefaultProxyCustomText.Header" xml:space="preserve">
+    <value>自定义代理</value>
+  </data>
+    <data name="DefaultProxyDisabled.Content" xml:space="preserve">
+    <value>禁用代理</value>
+  </data>
+    <data name="DefaultProxyDisabledText" xml:space="preserve">
+    <value>禁用代理</value>
+  </data>
+    <data name="DefaultProxySystemDefault.Content" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+    <data name="DefaultProxySystemDefaultText" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+    <data name="DefaultDownloadPathButton.Content" xml:space="preserve">
+    <value>选择</value>
+  </data>
+    <data name="DefaultRpcHost.PrimaryText" xml:space="preserve">
+    <value>RPC地址</value>
+  </data>
+    <data name="DefaultUseProxyInAria2.PrimaryText" xml:space="preserve">
+    <value>在RPC中使用代理</value>
+  </data>
+	<data name="SettingButtonToolTip.Content" xml:space="preserve">
+    <value>更多选项</value>
+  </data>
+    <data name="ShowNotification.PrimaryText" xml:space="preserve">
+    <value>启用通知</value>
+  </data>
+    <data name="DefaultUseRpc.PrimaryText" xml:space="preserve">
+    <value>启用RPC</value>
+  </data>
+    <data name="DefaultUseRpcSwitch.OnContent" xml:space="preserve">
+    <value>启用</value>
+  </data>
+    <data name="DefaultUseRpcSwitch.OffContent" xml:space="preserve">
+    <value>禁用</value>
+  </data>
+	<data name="SettingThemeLight.Content" xml:space="preserve">
+    <value>亮色</value>
+  </data>
+	<data name="SettingThemeDark.Content" xml:space="preserve">
+    <value>暗色</value>
+  </data>
+	<data name="SettingThemeDefault.Content" xml:space="preserve">
+    <value>默认</value>
+  </data>
+	<data name="About.Text" xml:space="preserve">
+    <value>关于此应用</value>
+  </data>
+	<data name="AboutDescription.Text" xml:space="preserve">
+    <value>made by 子斗子 with ❤️</value>
+  </data>
+	<data name="PrivacyTermsLink.Content" xml:space="preserve">
+    <value>隐私政策</value>
+  </data>
+	<data name="PrivacyTermsLink.NavigateUri" xml:space="preserve">
+    <value>https://www.bilibili.com/video/BV1GJ411x7h7</value>
+  </data>
+	<data name="SettingsTitle.Text" xml:space="preserve">
+    <value>设置</value>
+        <comment>Page title for SettingsPage</comment>
+  </data>
+	<data name="SettingButton.Text" xml:space="preserve">
+    <value>设置</value>
+  </data>
+	<data name="AboutButton.Text" xml:space="preserve">
+    <value>关于</value>
+  </data>
+	<data name="BuildButton.Content" xml:space="preserve">
+    <value>构建</value>
+  </data>
+    <data name="AboutDialog.Title" xml:space="preserve">
+    <value>关于</value>
+  </data>
+    <data name="AboutDialog.CloseButtonText" xml:space="preserve">
+    <value>确认</value>
+  </data>
+	<data name="SponsorDialog.Title" xml:space="preserve">
+	<value>给点?</value>
+</data>
+	<data name="SponsorDialog.PrimaryButtonText" xml:space="preserve">
+	<value>确认</value>
+</data>
+	<data name="SponsorDialog.CloseButtonText" xml:space="preserve">
+	<value>下次一定</value>
+</data>
+	<data name="SettingsPagePrivacyTermsLink.Content" xml:space="preserve">
+    <value>隐私声明</value>
+  </data>
+    <data name="SponsorText.Content" xml:space="preserve">
+        <value>捐赠链接</value>
+    </data>
+    <data name="AliPay.Content" xml:space="preserve">
+        <value>支付宝</value>
+    </data>
+    <data name="WeChatPay.Content" xml:space="preserve">
+        <value>微信</value>
+    </data>
+    <data name="OtherOptions.Text" xml:space="preserve">
+        <value>其他选项</value>
+    </data>
+    <data name="CheckRpcHost.Content" xml:space="preserve">
+        <value>检查可用性</value>
+    </data>
+    <data name="DefaultUseRpc.SecondaryText" xml:space="preserve">
+        <value>输入RPC地址后再点击检查可用性</value>
+    </data>
+    <data name="ImportSettings.Content" xml:space="preserve">
+        <value>导入设置</value>
+    </data>
+    <data name="ExportSettings.Content" xml:space="preserve">
+        <value>导出设置</value>
+    </data>
+    <data name="OpenDataFolder.Content" xml:space="preserve">
+        <value>打开应用数据文件夹</value>
+    </data>
+    <data name="RememberAccount.PrimaryText" xml:space="preserve">
+        <value>记住用户名和密码</value>
+    </data>
+    <data name="LoginItem.PrimaryText" xml:space="preserve">
+        <value>登录</value>
+    </data>
+    <data name="ClearSucceedInfos.PrimaryText" xml:space="preserve">
+        <value>清除下载页面中的成功信息</value>
+    </data>
+    <data name="ExportLatestLog.Content" xml:space="preserve">
+        <value>导出日志信息</value>
+    </data>
+    <data name="LoginItem.SecondaryText" xml:space="preserve">
+        <value>如果下载文件大小为146B，可以尝试登录重新下载</value>
+    </data>
+    <data name="UsernameItem.PrimaryText" xml:space="preserve">
+        <value>用户名</value>
+    </data>
+    <data name="PasswordItem.PrimaryText" xml:space="preserve">
+        <value>密码</value>
+    </data>
+    <data name="DownloadDirectly.PrimaryText" xml:space="preserve">
+        <value>直接下载</value>
+    </data>
+    <data name="DownloadDirectly.SecondaryText" xml:space="preserve">
+        <value>开启后不显示解析按钮, 点击下载按钮直接解析并下载</value>
+    </data>
+</root>

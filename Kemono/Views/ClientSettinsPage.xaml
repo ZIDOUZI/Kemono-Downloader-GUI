@@ -1,0 +1,56 @@
+﻿<Page
+    Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"
+    x:Class="Kemono.Views.ClientSettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:models="using:Kemono.Models"
+    mc:Ignorable="d">
+
+    <StackPanel Margin="4,0">
+        <models:SettingItem x:Uid="\ClientSettingsPage\Domain" Margin="4">
+            <ComboBox x:Name="Ua" ItemsSource="{x:Bind _domains}" VerticalAlignment="Center" MinWidth="200"
+                      HorizontalAlignment="Right" SelectedItem="{x:Bind Path=Builder.Domain, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Timeout" Margin="4">
+            <Slider MinWidth="200" Maximum="60000" TickFrequency="5000" TickPlacement="Outside"
+                    HorizontalAlignment="Left" Value="{x:Bind Timeout, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Retry" Margin="4">
+            <Slider MinWidth="200" Maximum="64" Minimum="1" TickFrequency="2" TickPlacement="Outside"
+                    HorizontalAlignment="Left" Value="{x:Bind Retry, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Delay" Margin="4">
+            <Slider MinWidth="200" Maximum="60000" TickFrequency="5000" TickPlacement="Outside"
+                    HorizontalAlignment="Left" Value="{x:Bind Delay, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Proxy" Margin="4">
+            <TextBox HorizontalAlignment="Left" MinWidth="200" PlaceholderText="https://your.proxy.host:port"
+                     TextChanged="InputProxy" Text="{x:Bind Builder.Proxy, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\UseProxyInAria2" Margin="4">
+            <ToggleSwitch IsOn="{x:Bind ViewModel.UseProxyInAria2, Mode=TwoWay}" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Username" x:Name="UsernameBlock" IsEnabled="False"
+                            Visibility="Collapsed" Margin="4">
+            <TextBox x:Uid="Optional" HorizontalAlignment="Left" MinWidth="200" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\Password" x:Name="PasswordBlock" IsEnabled="False"
+                            Visibility="Collapsed" Margin="4">
+            <TextBox x:Uid="Optional" HorizontalAlignment="Left" MinWidth="200" />
+        </models:SettingItem>
+
+        <models:SettingItem x:Uid="\ClientSettingsPage\UserAgent" Margin="4">
+            <ComboBox ItemsSource="{x:Bind _userAgents.Keys}" IsEditable="True"
+                      MinWidth="200" TextSubmitted="TextSubmitted" SelectedIndex="0" />
+        </models:SettingItem>
+    </StackPanel>
+</Page>

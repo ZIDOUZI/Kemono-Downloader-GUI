@@ -1,0 +1,7 @@
+﻿.idea
+bin
+obj
+.vs
+Test.cs
+kemono api.http
+Kemono_TemporaryKey.pfx

@@ -1,0 +1,100 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net6.0-windows10.0.19041.0</TargetFramework>
+        <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+        <RootNamespace>Kemono</RootNamespace>
+        <ApplicationIcon>Assets/WindowIcon.ico</ApplicationIcon>
+        <ApplicationManifest>app.manifest</ApplicationManifest>
+        <Platforms>x86;x64;arm64</Platforms>
+        <RuntimeIdentifiers>win10-x86;win10-x64;win10-arm64</RuntimeIdentifiers>
+        <PublishProfile>Properties\PublishProfiles\win10-$(Platform).pubxml</PublishProfile>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <UseWinUI>true</UseWinUI>
+        <EnableMsixTooling>true</EnableMsixTooling>
+        <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+        <PackageCertificateThumbprint>7DC9D378B84D0BF33D73E7615747F2372A7DF4AD</PackageCertificateThumbprint>
+        <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+        <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+        <AppxPackageSigningTimestampDigestAlgorithm>SHA512</AppxPackageSigningTimestampDigestAlgorithm>
+        <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+        <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+        <GenerateTestArtifacts>True</GenerateTestArtifacts>
+        <AppxBundle>Auto</AppxBundle>
+        <AppxBundlePlatforms>x86|x64</AppxBundlePlatforms>
+        <AppxPackageDir>D:\Dou\Projects\Windows\Kemono Downloader\Kemono\bin\x64\Release\net6.0-windows10.0.19041.0\win10-x64\AppPackages\</AppxPackageDir>
+        <UserSecretsId>c9711188-0163-4a7f-bf4b-5bda48c657d3</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <Manifest Include="$(ApplicationManifest)" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.0" />
+        <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.2.221209.1" />
+        <PackageReference Include="Microsoft.Xaml.Behaviors.WinUI.Managed" Version="2.0.9" />
+        <PackageReference Include="WinUIEx" Version="2.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\Kemono.Core\Kemono.Core.csproj" />
+    </ItemGroup>
+    <ItemGroup>
+        <None Update="appsettings.json">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+        </None>
+        <None Remove="Models\Tree\**" />
+        <None Remove="obj\**" />
+        <None Remove="Kemono_TemporaryKey.pfx" />
+    </ItemGroup>
+
+    <ItemGroup Condition="'$(DisableMsixProjectCapabilityAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+        <ProjectCapability Include="Msix" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Strings\en-us\BuildPage.resw" />
+        <Content Include="Strings\en-us\ClientSettingsPage.resw" />
+        <Content Include="Strings\en-us\DownloadSettingsPage.resw" />
+        <Content Include="Strings\en-us\Resources.resw" />
+        <Content Include="Strings\zh-cn\BuildPage.resw" />
+        <Content Include="Strings\zh-cn\ClientSettingsPage.resw" />
+        <Content Include="Strings\zh-cn\DownloadSettingsPage.resw" />
+        <Content Include="Strings\zh-cn\Resources.resw" />
+        <Content Include="Strings\zh-cn\SettingsPage.resw" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Page Remove="Models\Tree\**" />
+        <Page Remove="obj\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Compile Remove="Models\Tree\**" />
+        <Compile Remove="obj\**" />
+        <Compile Remove="Helpers\BackdropHelper.cs" />
+        <Compile Remove="Helpers\WindowsSystemDIspatcherQueueHelper.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Remove="Models\Tree\**" />
+        <EmbeddedResource Remove="obj\**" />
+    </ItemGroup>
+
+    <PropertyGroup Condition="'$(DisableHasPackageAndPublishMenuAddedByProject)'!='true' and '$(EnableMsixTooling)'=='true'">
+        <HasPackageAndPublishMenu>true</HasPackageAndPublishMenu>
+    </PropertyGroup>
+
+    <Target Name="_RemoveFrameworkReferences" BeforeTargets="_ConvertItems;_CalculateInputsForGenerateCurrentProjectAppxManifest">
+        <ItemGroup>
+            <FrameworkSdkReference Remove="@(FrameworkSdkReference)" Condition="$([System.String]::Copy('%(FrameworkSdkReference.SDKName)').StartsWith('Microsoft.WindowsAppRuntime.'))" />
+        </ItemGroup>
+    </Target>
+
+    <ItemGroup>
+      <PRIResource Remove="obj\**" />
+    </ItemGroup>
+</Project>
