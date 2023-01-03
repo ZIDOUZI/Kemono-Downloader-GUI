@@ -1,6 +1,6 @@
 # Kemono Downloader
 
-[![GitHub license](https://img.shields.io/badge/License-MIT-blue)](https://mit-license.org/)
+[![GitHub license](https://img.shields.io/badge/License-GUN%20GPLv3-blue)](https://www.gnu.org/licenses/gpl-3.0.html)
 [![Language](https://img.shields.io/badge/Language-C%23-purple)](https://learn.microsoft.com/zh-cn/dotnet/csharp/)
 [![Platform](https://img.shields.io/badge/Platform-Windows-green)](https://www.microsoft.com/windows)
 
