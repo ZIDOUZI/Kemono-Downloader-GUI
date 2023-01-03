@@ -5,6 +5,8 @@
 [![Platform](https://img.shields.io/badge/Platform-Windows-green)](https://www.microsoft.com/windows)
 
 [![WinUI3](https://img.shields.io/badge/WinUI3-1.2.221209.1-_)](https://learn.microsoft.com/zh-cn/windows/apps/winui/winui3/)
+
+[![sponsor](https://img.shields.io/badge/sopnsor-pink)](https://ko-fi.com/zidouzi)
 ## 安装方法
 
 ![image](https://user-images.githubusercontent.com/53157536/207755793-271ddc74-8290-415c-a542-82116a5381b2.png)
