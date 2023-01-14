@@ -108,7 +108,7 @@
                         </Grid>
                     </models:SettingExpander>
 
-                    <models:SettingItem x:Uid="EnableBackdropInPages">
+                    <models:SettingItem x:Uid="EnableBackdropInPages" Visibility="Collapsed">
                         <ToggleSwitch IsOn="{x:Bind ViewModel.EnableBackdropInPages, Mode=TwoWay}" />
                     </models:SettingItem>
 
@@ -143,7 +143,7 @@
                         <TextBox HorizontalAlignment="Left" MinWidth="200" Text="{x:Bind ViewModel.Token, Mode=TwoWay}" />
                     </models:SettingItem>
 
-                    <models:SettingExpander x:Name="DefaultProxy" x:Uid="DefaultProxy">
+                    <models:SettingExpander x:Name="DefaultProxy" x:Uid="\SettingsPage\DefaultProxy">
                         <RadioButtons SelectedIndex="{x:Bind ViewModel.ProxyMethod, Mode=TwoWay}"
                                       HorizontalAlignment="Stretch">
                             <RadioButton x:Uid="DefaultProxyDisabled" />
@@ -177,6 +177,8 @@
                     <models:SettingItem x:Uid="ClearSucceedInfos">
                         <ToggleSwitch IsOn="{x:Bind ViewModel.ClearSucceedInfos, Mode=TwoWay}" />
                     </models:SettingItem>
+
+                    <models:SettingItem x:Uid="\SettingsPage\ExportToClipboard"></models:SettingItem>
 
                 </StackPanel>
 

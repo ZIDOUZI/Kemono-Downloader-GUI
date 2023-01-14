@@ -38,7 +38,7 @@ public sealed partial class ClientSettingsPage : Page
         private set;
     } = null!;
 
-    private Downloader.Builder Builder => ViewModel.Builder;
+    private Resolver.Builder Builder => ViewModel.Builder;
 
     private double Timeout
     {

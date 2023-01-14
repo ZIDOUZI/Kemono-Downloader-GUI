@@ -22,7 +22,7 @@ public sealed partial class DownloadSettingsPage : Page
         private set;
     } = null!;
 
-    private Downloader.Builder Builder => Vm.Builder;
+    private Resolver.Builder Builder => Vm.Builder;
 
     protected override void OnNavigatedTo(NavigationEventArgs e)
     {

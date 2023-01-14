@@ -123,6 +123,18 @@
   <data name="AutoExtractZipFile.PrimaryText" xml:space="preserve">
     <value>自动解压zip文件</value>
   </data>
+  <data name="DefaultProxy.PrimaryText" xml:space="preserve">
+    <value>代理</value>
+  </data>
+  <data name="DefaultProxy.SecondaryText" xml:space="preserve">
+    <value>更改此设置将在所有未构建的标签页中生效</value>
+  </data>
+  <data name="ExportToClipboard.PrimaryText" xml:space="preserve">
+    <value>导出Mega链接到剪贴板</value>
+  </data>
+  <data name="ExportToClipboard.SecondaryText" xml:space="preserve">
+    <value>配合Mega下载器使用. 暂不支持目录</value>
+  </data>
   <data name="Never" xml:space="preserve">
     <value>从不</value>
   </data>

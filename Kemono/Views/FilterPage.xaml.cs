@@ -30,14 +30,12 @@ public sealed partial class FilterPage : Page
     {
         base.OnNavigatedTo(e);
         if (e.Parameter is not IServiceScope scope)
-        {
-            throw new ArgumentException();
-        }
+            throw new ArgumentException(nameof(e.Parameter));
 
         _frame = scope.GetService<TabItemViewModel>().RootFrame;
         ViewModel = scope.GetService<DownloadViewModel>();
 
-        _items = ViewModel.Artists.Select(artist => TreeItem.FromArtist(artist, ViewModel.Downloader.HaveRpc));
+        _items = ViewModel.Artists.Select(artist => TreeItem.FromArtist(artist, ViewModel.Resolver.HaveRpc));
     }
 
     private void ImageSelectionChanged(object sender, RoutedEventArgs e) =>

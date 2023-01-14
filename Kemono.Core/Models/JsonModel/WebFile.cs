@@ -12,6 +12,8 @@ public class WebFile : INotifyPropertyChanged
 
     public string File;
 
+    public int Index;
+
     public string Url;
     // TODO: 替换notnull, 测试可用性
 

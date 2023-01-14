@@ -1,4 +1,5 @@
 ﻿using System.Diagnostics;
+using System.Text;
 using Kemono.Activation;
 using Kemono.Contracts.Services;
 using Kemono.Core.Contracts.Services;
@@ -83,26 +84,14 @@ public partial class App : Application
         UnhandledException += App_UnhandledException;
     }
 
-    public static WindowEx MainWindow
-    {
-        get;
-    } = new MainWindow();
+    public static WindowEx MainWindow { get; } = new MainWindow();
 
-    public static IntPtr HWND
-    {
-        get;
-    } = MainWindow.GetWindowHandle();
+    public static IntPtr HWND { get; } = MainWindow.GetWindowHandle();
 
 
-    public static WindowManager Manager
-    {
-        get;
-    } = WindowManager.Get(MainWindow);
+    public static WindowManager Manager { get; } = WindowManager.Get(MainWindow);
 
-    public static MainViewModel MainViewModel
-    {
-        get;
-    } = new();
+    public static MainViewModel MainViewModel { get; } = new();
 
     public static XamlRoot GlobalRoot => MainWindow.Content.XamlRoot;
 
@@ -111,10 +100,7 @@ public partial class App : Application
     // https://docs.microsoft.com/dotnet/core/extensions/dependency-injection
     // https://docs.microsoft.com/dotnet/core/extensions/configuration
     // https://docs.microsoft.com/dotnet/core/extensions/logging
-    public IHost Host
-    {
-        get;
-    }
+    public IHost Host { get; }
 
     public static T GetService<T>() where T : class
     {
@@ -137,7 +123,22 @@ public partial class App : Application
         Console.WriteLine(e);
         CH?.Dispose();
 
-        GetService<IFileService>().Save(PathHelper.AppDataPath, "kemono-error.log", e);
+        var sb = new StringBuilder()
+            .AppendLine("Unhandled Exception.")
+            .AppendLine($"Message: {e.Message}")
+            .AppendLine($"Data: {e.Exception.Data}")
+            .AppendLine("===ExceptionInfo===")
+            .AppendLine($"ClassName: {e.Exception.GetType()}")
+            .AppendLine($"Message: {e.Exception.Message}")
+            .AppendLine($"Data: {e.Exception.Data}")
+            .AppendLine($"InnerException: {e.Exception.InnerException}")
+            .AppendLine($"HelpURL: {e.Exception.HelpLink}")
+            .AppendLine($"Source: {e.Exception.Source}")
+            .AppendLine($"HResult: {e.Exception.HResult:x8}")
+            .AppendLine("StackTrace:")
+            .AppendLine(e.Exception.StackTrace);
+
+        PathHelper.SaveText("kemono-error.log", sb.ToString());
 
         Process.Start("Explorer", PathHelper.AppDataPath);
 

@@ -12,6 +12,7 @@
 
     <ItemGroup>
         <PackageReference Include="Aria2.NET" Version="1.0.5" />
+        <PackageReference Include="Downloader" Version="3.0.2" />
         <PackageReference Include="MegaApiClient" Version="1.10.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
         <PackageReference Include="System.Drawing.Common" Version="7.0.0-rc.2.22472.3" />

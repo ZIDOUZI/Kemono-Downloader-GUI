@@ -8,6 +8,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Aria2NET;
+using Downloader;
 using Kemono.Core.Helpers;
 using Kemono.Core.Models.JsonModel;
 using Kemono.Core.Services;
@@ -27,14 +28,14 @@ public enum UserAgent
 
 public enum Domain
 {
-    kemono,
-    commer
+    Kemono,
+    Commer
 }
 
-public class Downloader
+public class Resolver
 {
     private const string Reg = "https://(.*)(kemono|commer)\\.party/(\\w+)/user/.+/?(post/.+)?";
-    private const string _uuid = "88888888-4444-4444-4444-121212121212";
+    private const string Uuid = "88888888-4444-4444-4444-121212121212";
 
     private static readonly JsonSerializerOptions Options = new()
         {Converters = {new DateTimeOffsetFromNumberJsonConverter()}};
@@ -46,19 +47,21 @@ public class Downloader
 
     private readonly List<Artist> _artists = new();
     private readonly string _dataFormat;
-    private readonly int _delay;
+    public readonly DownloadConfiguration Config;
+    public readonly DownloadService Service;
+    private readonly string _domain;
 
     private readonly string? _header;
     private readonly bool _overwrite;
     private readonly string _pattern;
     private readonly WebProxy? _proxy;
-    private readonly uint _retry;
-    private readonly Aria2? _rpc;
+    private readonly Aria2NetClient? _rpc;
+    private readonly int _chunk;
     public readonly string DefaultPath;
     public readonly bool LoggedIn;
 
-    private Downloader(Builder builder, Action<Downloader>? init, Aria2? rpc, CookieCollection cookies, bool loggedIn,
-        string? fallback = null)
+    private Resolver(Builder builder, Aria2NetClient? rpc, CookieCollection cookies,
+        bool loggedIn, string? fallback = null)
     {
         var handler = new HttpClientHandler {UseCookies = true};
         var c = cookies.Where(it => it.Domain == $".{builder.Domain}.party").ToList();
@@ -83,46 +86,61 @@ public class Downloader
         }
 
         handler.CookieContainer.Add(cookies);
+        _domain = $"https://{builder.Domain}.party";
         Client = new HttpClient(handler)
         {
             Timeout = builder.Timeout == 0 ? Timeout.InfiniteTimeSpan : TimeSpan.FromMilliseconds(builder.Timeout),
             DefaultRequestHeaders =
                 {{"User-Agent", builder.UserAgent}, {"Referrer", $"https://{builder.Domain}.party"}},
-            BaseAddress = new Uri($"https://{builder.Domain}.party")
+            BaseAddress = new Uri(_domain)
         };
 
         DefaultPath = string.IsNullOrWhiteSpace(builder.DefaultPath)
             ? fallback ?? Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments)
             : builder.DefaultPath;
-        _retry = builder.Retry;
-        _delay = builder.Delay;
         _rpc = rpc;
         _pattern = builder.Pattern;
         _overwrite = builder.Overwrite;
         _dataFormat = builder.DateFormat;
+        _chunk = builder.Chunk;
         LoggedIn = loggedIn;
 
-        init?.Invoke(this);
+        var container = new CookieContainer();
+        container.Add(cookies);
+        var request = new RequestConfiguration
+        {
+            CookieContainer = container,
+            UserAgent = builder.UserAgent,
+            Referer = $"https://{builder.Domain}.party",
+            AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate,
+            ProtocolVersion = HttpVersion.Version11
+        };
+
+        if (builder.Proxy != "") request.Proxy = new WebProxy(new Uri(builder.Proxy));
+
+        Config = new DownloadConfiguration
+        {
+            Timeout = builder.Timeout,
+            MaxTryAgainOnFailover = builder.Retry,
+            RequestConfiguration = request
+        };
+        Service = new DownloadService(Config);
     }
 
-    private HttpClient Client
-    {
-        get;
-    }
+    // TODO: 可否处理掉client
+    private HttpClient Client { get; }
 
 
     public bool HaveRpc => _rpc != null;
     public int ArtistCount => _artists.Count;
 
-    public async Task DownloadArtists(Action<long> total, Action<int> added)
+    public async Task DownloadArtists(Action<long> total, Action<long> current)
     {
-        await using var download = new StreamDownload(Client, "api/creators");
-        download.LengthCallback += total;
-        download.ProgressChanged += added;
-        await download.Init();
-        var stream = await download.Start();
-        var s = Encoding.UTF8.GetString(stream.ToArray());
-        var json = JsonSerializer.Deserialize<List<Artist>>(s, Options);
+        using var download = DownloadBuilder.New().WithUrl($"{_domain}/api/creators").Build();
+        download.DownloadStarted += (_, args) => total(args.TotalBytesToReceive);
+        download.DownloadProgressChanged += (_, args) => current(args.ReceivedBytesSize);
+        using var reader = new StreamReader(await download.StartAsync());
+        var json = JsonSerializer.Deserialize<List<Artist>>(await reader.ReadToEndAsync(), Options);
         if (json != null)
         {
             _artists.AddRange(json);
@@ -152,19 +170,16 @@ public class Downloader
         var l = new List<Post>();
         while (true)
         {
-            
             var s = $"/api/{service}/user/{id}?o={order}";
             var receive = await Client.GetFromJsonAsync<List<Post>>(s, Json.Options);
+
             if (receive == null)
-            {
                 throw new NullReferenceException();
-            }
 
             l.AddRange(receive);
+
             if (receive.Count == 0)
-            {
                 break;
-            }
 
             order += receive.Count;
         }
@@ -175,25 +190,22 @@ public class Downloader
     public async Task<Post> GetPost(Service service, string user, string id)
     {
         var order = 0;
+
         while (true)
         {
             var s = $"/api/{service}/user/{user}?o={order}";
             var receive = await Client.GetFromJsonAsync<List<Post>>(s, Json.Options);
-            if (receive == null)
-            {
-                throw new NullReferenceException();
-            }
 
-            var result = receive.Find(post => post.Id == id);
-            if (result != null)
-            {
-                return result;
-            }
+            if (receive == null)
+                throw new NullReferenceException();
 
             if (receive.Count == 0)
-            {
                 break;
-            }
+
+            var result = receive.Find(post => post.Id == id);
+
+            if (result != null)
+                return result;
 
             order += receive.Count;
         }
@@ -201,7 +213,7 @@ public class Downloader
         throw new ArgumentException($"未找到此post(id={id})");
     }
 
-    private string Format(Post post, int index = 0) =>
+    private string Format(Post post) =>
         Wrong.Replace(
             DefaultPath + _pattern
                 .Replace("{service}", post.Service.ToString().EscapeFile())
@@ -210,52 +222,55 @@ public class Downloader
                 .Replace("{date}", post.Published?.ToString(_dataFormat) ?? "unknown time")
                 .Replace("{title}", post.Title.EscapeFile())
                 .Replace("{post_id}", post.Id.EscapeFile())
-                .Replace("{time}", Now.ToString(_dataFormat))
-                .Replace("{index0}", $"{index}")
-                .Replace("{_index0}", $"_{index}")
-                .Replace("{index0_}", $"{index}_")
-                .Replace("{index}", index == 0 ? "" : $"{index}")
-                .Replace("{_index}", index == 0 ? "" : $"_{index}")
-                .Replace("{index_}", index == 0 ? "" : $"{index}_"), @"\");
+                .Replace("{time}", Now.ToString(_dataFormat)), @"\");
 
-    private string Format(Post post, WebFile file, int index = 0) =>
+    private string Format(Post post, WebFile file) =>
         NoFilename.Replace(
-            Format(post, index)
+            Format(post)
+                .Replace("{index0}", $"{file.Index}")
+                .Replace("{_index0}", $"_{file.Index}")
+                .Replace("{index0_}", $"{file.Index}_")
+                .Replace("{index}", file.Index == 0 ? "" : $"{file.Index}")
+                .Replace("{_index}", file.Index == 0 ? "" : $"_{file.Index}")
+                .Replace("{index_}", file.Index == 0 ? "" : $"{file.Index}_")
                 .Replace("{auto_named}",
-                    UUID.IsMatch(file.NameWithoutExtension) ? index == 0 ? "cover" : $"{index}" : "{name}")
+                    UUID.IsMatch(file.NameWithoutExtension)
+                        ? file.Index == 0
+                            ? "cover"
+                            : $"{file.Index}"
+                        : "{name}")
                 .Replace("{name}",
                     file.NameWithoutExtension.Length > 256
-                        ? $"{index}"
+                        ? $"{file.Index}"
                         : file.NameWithoutExtension.EscapeFile()),
-            match => match.Value + index
+            match => match.Value + file.Index
         )
         + file.Extension;
 
-    private IEnumerable<WebFile> Filter(Post post, out bool haveCover)
+    private IEnumerable<WebFile> Filter(Post post)
     {
-        var list = post.Attachments;
+
+        var i = post.File.Path != null ? 0 : 1;
+
+        if (i == 0)
+        {
+            post.File.UseRpc = HaveRpc;
+            yield return post.File;
+        }
+
         foreach (Match match in ImgReg.Matches(post.Content))
         {
             var name = match.Groups[1].Value;
-            list.Insert(0, new WebFile {Name = _uuid + Path.GetExtension(name), Path = match.Groups[1].Value});
+            yield return new WebFile {Name = Uuid + Path.GetExtension(name), Path = match.Groups[1].Value, Index = i++};
         }
-
-        haveCover = post.File.Path != null;
-        if (haveCover)
-        {
-            list.Insert(0, post.File);
-        }
-
-        return list.TakeWhile(file => file?.Name != null).OnEach(file => file.UseRpc = HaveRpc);
     }
 
     public Artist Parse(Post post) =>
         GetArtist(a => a.Id == post.User).SetPosts(
-            post.SetFiles(Filter(post, out var haveCover).Select((file, i) => file.Apply(f =>
+            post.SetFiles(Filter(post).Select(file => file.Apply(f =>
                     {
-                        f.File = Format(post, file, haveCover ? i : ++i);
-                        f.Url = $"/data{file.Path!}";
-                        f.UseRpc = HaveRpc;
+                        f.File = Format(post, file);
+                        f.Url = $"{_domain}/data{file.Path!}";
                     })
                 )
             )
@@ -263,11 +278,10 @@ public class Downloader
 
     public async Task<Artist> Parse(Artist artist) => artist.SetPosts(
         (await GetPosts(artist)).Select(post => post.SetFiles(
-                Filter(post, out var haveCover).Select((file, i) => file.Apply(f =>
+                Filter(post).Select(file => file.Apply(f =>
                     {
-                        f.File = Format(post, file, haveCover ? i++ : i);
-                        f.Url = $"/data{file.Path!}";
-                        f.UseRpc = HaveRpc;
+                        f.File = Format(post, file);
+                        f.Url = $"{_domain}/data{file.Path!}";
                     })
                 )
             )
@@ -339,14 +353,24 @@ public class Downloader
         }
     }
 
-    public FileDownload? Download(WebFile info, long buffer = 8192) =>
+    public IDownload? Download(WebFile info) =>
         new FileInfo(info.File).Exists && !_overwrite
             ? null
-            : new FileDownload(Client, info.Url, info.File, buffer, _retry);
+            : DownloadBuilder.New()
+                .WithUrl(info.Url)
+                .WithFileLocation(info.File)
+                .WithConfiguration(Config)
+                .Build();
 
-    public async Task<string> Post(WebFile info, bool useProxy = false)
+    public async Task<string> Post(WebFile info, bool useProxy = false, CancellationToken token = default)
     {
-        var dict = new Dictionary<string, string>();
+        var dict = new Dictionary<string, object>
+        {
+            {"dir", info.File},
+            {"referer", "*"},
+            // caution: boolean转换
+            {"allow-overwrite", _overwrite}
+        };
         if (useProxy && _proxy != null && _proxy.Address != null)
         {
             dict["all-proxy"] = _proxy.Address!.ToString();
@@ -362,55 +386,45 @@ public class Downloader
             dict["header"] = _header;
         }
 
-        dict["referer"] = "*";
-        dict["allow-overwrite"] = _overwrite ? "true" : "false";
-
-        var file = new FileInfo(info.File);
-        await Task.Delay(_delay);
-        return await _rpc!.AddUri(info.Url, file.DirectoryName, file.Name, dict);
+        // TODO
+        // await Task.Delay(_delay);
+        return await _rpc!.AddUriAsync(new[] {info.Url}, dict, 0, token);
     }
 
     private Artist Reverse(Post input) => _artists.First(it => it.Id == input.User);
 
     public class Builder
     {
-        private static readonly HttpClientHandler Handler = new() {AllowAutoRedirect = false, UseCookies = true};
-
-        private readonly HttpClient _client = new(Handler);
-
+        private readonly HttpClient _client = new(new HttpClientHandler {AllowAutoRedirect = false, UseCookies = true});
         private readonly CookieCollection _cookies = new();
+        private Aria2NetClient? _rpc;
+
         private bool _loggedIn;
-        private Aria2? _rpc;
         public string DateFormat = "yyyy-MM-dd HH-mm";
         public string DefaultPath = "";
         public int Delay = 0;
-
         public bool Overwrite = false;
         public string Pattern = @"\kemono\{service}\{artist}[{artist_id}]\[{date}]{title}[{post_id}]\{name}{_index}";
         public string Proxy = "";
-        public uint Retry = 10;
-
-        public long Timeout = 0;
+        public int Retry = 10;
+        public int Timeout = 0;
+        public int Chunk = 0; // TODO: 添加到构建页中
         public string UserAgent = "aria2/1.35.0";
         public bool UseRpc = false;
-
-        public Builder(Action<Builder>? init = null)
-        {
-            init?.Invoke(this);
-        }
-
-        public Domain Domain = Domain.kemono;
+        public Domain Domain = Domain.Kemono;
 
         public async Task<bool> Aria2Config(string uri, string token = "")
         {
-            var host = new Uri(uri);
-            if (!uri.EndsWith("jsonrpc"))
+            _rpc = new Aria2NetClient(uri, token);
+            try
             {
-                host = new Uri(host, "jsonrpc");
+                await _rpc.GetGlobalStatAsync();
+                return true;
             }
-
-            _rpc = new Aria2(host, token);
-            return await _rpc.CheckAvailability();
+            catch (Exception)
+            {
+                return false;
+            }
         }
 
         public async Task<bool> Login(string username, string password)
@@ -419,20 +433,16 @@ public class Downloader
                 new Dictionary<string, string> {{"username", username}, {"password", password}}
             );
 
-            var result = await _client.PostAsync($"https://{Domain}.party/account/login", body);
-            if (result.StatusCode != HttpStatusCode.Redirect)
-            {
-                throw new ApplicationException();
-            }
+            var response = await _client.PostAsync($"https://{Domain}.party/account/login", body);
 
-            if (result.Headers.Location!.OriginalString != "/artists?logged_in=yes")
-            {
+            if (response.StatusCode != HttpStatusCode.Redirect)
+                throw new ApplicationException();
+            if (response.Headers.Location!.OriginalString != "/artists?logged_in=yes")
                 return false;
-            }
 
             try
             {
-                foreach (var cookieString in result.Headers.GetValues("set-cookie"))
+                foreach (var cookieString in response.Headers.GetValues("set-cookie"))
                 {
                     _cookies.Add(GetCookiesByHeader(cookieString, $"{Domain}.party"));
                 }
@@ -451,8 +461,9 @@ public class Downloader
         private static CookieCollection GetCookiesByHeader(string setCookie, string domain)
         {
             var cookieCollection = new CookieCollection();
-            setCookie += ",T"; //配合RegexSplitCookie2 加入后缀
-            var listStr = new Regex(@"[^,][\S\s]+?;+[\S\s]+?(?=,\S)").Matches(setCookie);
+            //配合RegexSplitCookie2 加入后缀
+            // TODO: 测试正则表达式
+            var listStr = new Regex(@"[^,][\S\s]+?;+[\S\s]+?(?=,\S)").Matches(setCookie + ",T");
             //循环遍历
             foreach (Match item in listStr)
             {
@@ -511,7 +522,12 @@ public class Downloader
             return cookieCollection;
         }
 
-        public async Task<Downloader> Build(Action<Downloader>? init = null)
+        /// <summary>
+        ///
+        /// </summary>
+        /// <returns></returns>
+        /// <exception cref="Exception">未知异常, 由<code>GetAsync</code>引起</exception>
+        public async Task<Resolver> Build()
         {
             if (!_cookies.Any())
             {
@@ -534,23 +550,18 @@ public class Downloader
                 }
             }
 
-            if ((_rpc == null) | !UseRpc)
-            {
-                return new Downloader(this, init, _rpc, _cookies, _loggedIn);
-            }
+            if (_rpc != null && UseRpc)
+                try
+                {
+                    var options = await _rpc!.GetGlobalOptionAsync();
+                    return new Resolver(this, _rpc, _cookies, _loggedIn, options["dir"]);
+                }
+                catch (Exception)
+                {
+                    // ignored
+                }
 
-            try
-            {
-                var json = JsonSerializer.Deserialize<JsonNode>(await _rpc!.GetGlobalOption());
-                var path = json!["result"]!["dir"]!.GetValue<string>();
-                _rpc.BaseUri = new Uri($"https://{Domain}.party/");
-                // _rpc
-                return new Downloader(this, init, _rpc, _cookies, _loggedIn, path);
-            }
-            catch (Exception)
-            {
-                return new Downloader(this, init, _rpc, _cookies, _loggedIn);
-            }
+            return new Resolver(this, _rpc, _cookies, _loggedIn);
         }
     }
 }

@@ -60,6 +60,7 @@
         <Content Include="Strings\en-us\ClientSettingsPage.resw" />
         <Content Include="Strings\en-us\DownloadSettingsPage.resw" />
         <Content Include="Strings\en-us\Resources.resw" />
+        <Content Include="Strings\en-us\SettingsPage.resw" />
         <Content Include="Strings\zh-cn\BuildPage.resw" />
         <Content Include="Strings\zh-cn\ClientSettingsPage.resw" />
         <Content Include="Strings\zh-cn\DownloadSettingsPage.resw" />

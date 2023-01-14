@@ -165,6 +165,4 @@ public class Artist : INotifyPropertyChanged
         OnPropertyChanged(propertyName);
         return true;
     }
-
-    public void Checked() => throw new NotImplementedException();
 }

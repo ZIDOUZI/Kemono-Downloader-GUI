@@ -14,13 +14,13 @@
             <StackPanel Margin="0,8">
                 <TextBlock>图像</TextBlock>
                 <Button Tag="0" Click="ImageSelectionChanged">不下载</Button>
-                <Button Tag="1" Click="ImageSelectionChanged" IsEnabled="{x:Bind ViewModel.Downloader.HaveRpc}">由RPC</Button>
+                <Button Tag="1" Click="ImageSelectionChanged" IsEnabled="{x:Bind ViewModel.Resolver.HaveRpc}">由RPC</Button>
                 <Button Tag="2" Click="ImageSelectionChanged">由App</Button>
             </StackPanel>
             <StackPanel Grid.Row="0" Grid.Column="1" Margin="0,8">
                 <TextBlock>文件</TextBlock>
                 <Button Tag="0" Click="FileSelectionChanged">不下载</Button>
-                <Button Tag="1" Click="FileSelectionChanged" IsEnabled="{x:Bind ViewModel.Downloader.HaveRpc}">由RPC</Button>
+                <Button Tag="1" Click="FileSelectionChanged" IsEnabled="{x:Bind ViewModel.Resolver.HaveRpc}">由RPC</Button>
                 <Button Tag="2" Click="FileSelectionChanged">由App</Button>
             </StackPanel>
             <Grid Row="1" Column="0" RowDefinitions="Auto, Auto, Auto" Margin="0,8">

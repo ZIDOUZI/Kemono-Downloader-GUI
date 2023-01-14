@@ -123,6 +123,18 @@
     <data name="AutoExtractZipFile.PrimaryText" xml:space="preserve">
       <value>Automatically extract zip files</value>
     </data>
+  <data name="DefaultProxy.PrimaryText" xml:space="preserve">
+    <value>Proxy</value>
+  </data>
+  <data name="DefaultProxy.SecondaryText" xml:space="preserve">
+    <value>Changing this setting will take effect in all unbuilt tabs</value>
+  </data>
+  <data name="ExportToClipboard.PrimaryText" xml:space="preserve">
+    <value>Export Mega link to clipboard</value>
+  </data>
+  <data name="ExportToClipboard.SecondaryText" xml:space="preserve">
+    <value>Use with Mega Downloader. Directory is not supported yet</value>
+  </data>
     <data name="Never" xml:space="preserve">
       <value>Never</value>
     </data>

@@ -15,6 +15,14 @@ public static class PathHelper
             ? File.Open(Path.Combine(folderPath, fileName), FileMode.OpenOrCreate, access, share)
             : throw new IOException();
 
+    public static void SaveText(string fileName, string text)
+    {
+        if (Directory.Exists(AppDataPath) || Directory.CreateDirectory(AppDataPath!).Exists)
+            File.WriteAllText(Path.Combine(AppDataPath, fileName), text);
+        else
+            throw new IOException();
+    }
+
     public static void OpenFolder(string path, bool create = true)
     {
         if (!Directory.Exists(path) && create)

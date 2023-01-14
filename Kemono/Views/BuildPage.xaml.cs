@@ -18,12 +18,19 @@ public sealed partial class BuildPage : Page
 {
     private readonly DownloadViewModel _download;
     private readonly TabItemViewModel _vm;
+    private readonly ContentDialog _dialog;
 
     public BuildPage(IServiceScope scope)
     {
         ViewModel = scope.GetService<BuildViewModel>();
-        _vm = scope.GetService<TabItemViewModel>();
         _download = scope.GetService<DownloadViewModel>();
+        _vm = scope.GetService<TabItemViewModel>();
+        _dialog = new ContentDialog
+        {
+            XamlRoot = XamlRoot,
+            Title = "登录失败",
+            PrimaryButtonText = "确认"
+        };
 
         InitializeComponent();
 
@@ -75,30 +82,16 @@ public sealed partial class BuildPage : Page
             {
                 if (!await ViewModel.Builder.Login(ViewModel.Username, ViewModel.Password))
                 {
-                    var dialog = new ContentDialog
-                    {
-                        XamlRoot = XamlRoot,
-                        Title = "登录失败",
-                        Content = "请检查账号和密码是否有误.\n 若不需要登录, 请取消勾选\"记住用户名和密码\"",
-                        PrimaryButtonText = "确认"
-                    };
-
-                    await dialog.ShowAsync();
+                    _dialog.Content = "请检查账号和密码是否有误.\n 若不需要登录, 请取消勾选\"记住用户名和密码\"";
+                    await _dialog.ShowAsync();
                     Content = old;
                     return;
                 }
             }
             catch (Exception e)
             {
-                var dialog = new ContentDialog
-                {
-                    XamlRoot = XamlRoot,
-                    Title = "登录失败",
-                    Content = e + "请检查网络连接.",
-                    PrimaryButtonText = "确认"
-                };
-
-                await dialog.ShowAsync();
+                _dialog.Content = e + "请检查网络连接.";
+                await _dialog.ShowAsync();
                 Content = old;
                 Console.WriteLine(e);
                 return;
@@ -117,14 +110,14 @@ public sealed partial class BuildPage : Page
 
         try
         {
-            _download.Downloader = await ViewModel.Builder.Build();
-            await _download.Downloader.DownloadArtists(
+            _download.Resolver = await ViewModel.Builder.Build();
+            await _download.Resolver.DownloadArtists(
                 total =>
                 {
                     ring.Maximum = total;
                     ring.IsIndeterminate = false;
                 },
-                added => ring.Value += added
+                added => ring.Value = added
             );
         }
         catch (Exception e)

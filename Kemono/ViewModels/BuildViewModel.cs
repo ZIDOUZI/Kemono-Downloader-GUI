@@ -14,7 +14,7 @@ public class BuildViewModel : InjectScopeViewModel
 {
     private static readonly ILocalSettingsService Settings = App.GetService<ILocalSettingsService>();
 
-    public readonly Downloader.Builder Builder;
+    public readonly Resolver.Builder Builder;
     private bool _isBackEnabled;
 
     private bool _login = App.Settings.RememberAccount;
@@ -39,7 +39,7 @@ public class BuildViewModel : InjectScopeViewModel
             NavigationService.Scope = scope;
             NavigationService.Navigated += OnNavigated;
         };
-        Builder = new Downloader.Builder
+        Builder = new Resolver.Builder
         {
             Proxy = App.Settings.ProxyMethod switch
             {
