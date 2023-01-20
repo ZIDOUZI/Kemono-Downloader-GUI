@@ -43,13 +43,13 @@ public sealed partial class ClientSettingsPage : Page
     private double Timeout
     {
         get => Builder.Timeout;
-        set => Builder.Timeout = (long)value;
+        set => Builder.Timeout = (int)value;
     }
 
     private double Retry
     {
         get => Builder.Retry;
-        set => Builder.Retry = (uint)value;
+        set => Builder.Retry = (int)value;
     }
 
     private double Delay

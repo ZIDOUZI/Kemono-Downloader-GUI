@@ -106,6 +106,8 @@ public sealed partial class BuildPage : Page
                 Content = old;
                 return;
             }
+
+            _download.HaveRpc = true;
         }
 
         try

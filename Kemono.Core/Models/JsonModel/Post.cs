@@ -9,8 +9,6 @@ public class Post : INotifyPropertyChanged
     private bool? _download;
     private bool? _useRpc;
 
-    public bool RpcEnable;
-
     // TODO: 修改是否下载评论文字等
     public bool SaveContent = true;
 

@@ -6,12 +6,14 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using Downloader;
+using Kemono.Contracts.Models;
 using Kemono.Core.Contracts.Services;
 using Kemono.Core.Helpers;
 using Kemono.Core.Models;
 using Kemono.Core.Models.JsonModel;
 using Kemono.Helpers;
 using Kemono.Models;
+using Kemono.Models.Tree;
 using Kemono.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.UI.Xaml;
@@ -109,6 +111,12 @@ public sealed partial class DownloadPage : Page
     #endregion
 
     #region Generate Functions
+
+    public async Task<ArtistUI> GetArtist(Artist artist) =>
+        new(artist, from post in await Vm.Resolver.GetPosts(artist) select GetPosts(post));
+
+    public PostUI GetPosts(Post post) =>
+        new(post, Vm.Resolver.GetFiles(post).Select(file => new WebFileUI(file, Vm.HaveRpc)));
 
     public static ContentDialog UnhandledError(Exception e)
     {
@@ -284,54 +292,10 @@ public sealed partial class DownloadPage : Page
         Load.IsEnabled = false;
         _finished = Ring.IsIndeterminate = Interrupt.IsEnabled = true;
 
-        var node = new YamlMappingNode();
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        async Task<(string name, YamlMappingNode map)?> ForArtist(Artist artist)
+        foreach (var obj in Vm.Resolved)
         {
-            var map = new YamlMappingNode();
-            await foreach (var (title, sequence) in DealArtist(_e.Current!))
-            {
-                if (!Downloading)
-                    break;
-
-                map.Add(title, sequence);
-            }
-
-            return map.Any() ? (artist.Name, map) : null;
         }
 
-        await foreach (var valueTuple in _e.DoWork(ForArtist))
-        {
-            if (!Downloading)
-                break;
-
-            if (valueTuple.HasValue)
-                node.Add(valueTuple.Value.name, valueTuple.Value.map);
-        }
-
-        if (node.Any())
-        {
-            await _writer.WriteLineAsync("---");
-            await _writer.WriteLineAsync($"# {DateTime.Now}");
-            Serializer.Serialize(_writer, node);
-            await _writer.WriteLineAsync("...");
-            var b = new HyperlinkButton {Content = "保存url成功. 点击打开目录", Padding = Zero};
-            b.Click += (_, _) => Process.Start("explorer", Vm.Resolver.DefaultPath);
-            Add(b);
-        }
-
-        if (App.Settings.ClearSucceedInfos)
-            Infos.Children.DropWhere(e => e is FrameworkElement {Tag: true});
-
-        Solve.IsEnabled = Download.IsEnabled = true;
-        Load.IsEnabled = Vm.Resolver.LoggedIn;
-        Ring.IsIndeterminate = Interrupt.IsEnabled = false;
-
-        if (!_finished)
-            return;
-
-        await ResetEnumerator();
         _vm.Text = "下载完成";
         Add(new TextBlock {Text = "下载已完成"});
     }
@@ -444,9 +408,7 @@ public sealed partial class DownloadPage : Page
         {
             Console.WriteLine("I: Continue to download file" + file.Name);
 
-            DownloadBuilder.Build(_interrupt);
-
-            _interrupt.Validate();
+            _d = DownloadBuilder.Build(_interrupt);
         }
         else
         {
@@ -469,8 +431,13 @@ public sealed partial class DownloadPage : Page
                 var pb = new ProgressBar {Margin = Default};
                 Add(tb, pb);
 
-                _d.DownloadStarted += (_, args) => pb.Maximum = args.TotalBytesToReceive;
                 _d.DownloadProgressChanged += (_, args) => pb.Value = args.TotalBytesToReceive;
+                _d.DownloadStarted += (_, args) =>
+                {
+                    pb.Maximum = args.TotalBytesToReceive;
+                    _vm.Text = "正在下载";
+                    tb.Text = $"││├正在下载文件: {name}";
+                };
                 _d.DownloadFileCompleted += (_, args) =>
                 {
                     if (args.Cancelled)
@@ -489,11 +456,9 @@ public sealed partial class DownloadPage : Page
                     {
                         _vm.Text = "下载成功";
                         tb.Text = $"││├文件 {name} 已下载.";
+                        tb.Tag = true;
                     }
                 };
-
-                _vm.Text = "正在下载";
-                tb.Text = $"││├正在下载文件: {name}";
                 await _d.StartAsync();
 
                 return new FileInfo(_d.Filename);

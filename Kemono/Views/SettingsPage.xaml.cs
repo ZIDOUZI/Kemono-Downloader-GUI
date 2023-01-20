@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Aria2NET;
 using Kemono.Core.Helpers;
 using Kemono.Core.Models;
 using Kemono.Helpers;
@@ -71,18 +72,14 @@ public sealed partial class SettingsPage : Page
 
     private async void CheckRpc(object sender, RoutedEventArgs e)
     {
-        var host = new Uri(ViewModel.Host);
-        if (!ViewModel.Host.EndsWith("jsonrpc"))
+        try
         {
-            host = new Uri(host, "jsonrpc");
-        }
-
-        if (await new Aria2(host, ViewModel.Token).CheckAvailability())
-        {
+            await new Aria2NetClient(ViewModel.Host, ViewModel.Token).GetGlobalOptionAsync();
             await Utils.ShowDialog("成功", "RPC可正常使用");
         }
-        else
+        catch (Exception exception)
         {
+            Console.WriteLine(exception);
             await Utils.ShowDialog("错误", "RPC检测出错");
         }
     }

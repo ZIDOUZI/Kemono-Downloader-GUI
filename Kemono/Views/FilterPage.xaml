@@ -5,7 +5,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-    xmlns:models="using:Kemono.Models"
+    xmlns:models="using:Kemono.Contracts.Models"
+    xmlns:tree="using:Kemono.Models.Tree"
     mc:Ignorable="d">
 
     <Grid ColumnDefinitions="3*, 2*">
@@ -23,6 +24,7 @@
                 <Button Tag="1" Click="FileSelectionChanged" IsEnabled="{x:Bind ViewModel.Resolver.HaveRpc}">由RPC</Button>
                 <Button Tag="2" Click="FileSelectionChanged">由App</Button>
             </StackPanel>
+            <!-- TODO: 按文件名后缀过滤 -->
             <Grid Row="1" Column="0" RowDefinitions="Auto, Auto, Auto" Margin="0,8">
                 <TextBlock>日期上限</TextBlock>
                 <DatePicker x:Name="BeforeDate" Grid.Row="1" SelectedDateChanged="FreshDate" Width="300" />
@@ -36,19 +38,30 @@
             <Button Grid.Row="2" Margin="0,8" Click="SelectUndownloaded" IsEnabled="False">仅勾选未下载(尚未实现)</Button>
             <Button Grid.Row="3" Grid.Column="0" Click="GoBack">确认筛选</Button>
         </Grid>
-        <TreeView Grid.Column="1" ScrollViewer.IsDeferredScrollingEnabled="True" ItemsSource="{x:Bind _items}"
-                  SelectionMode="None" CanDragItems="False" Margin="8">
-            <TreeView.ItemTemplate>
-                <DataTemplate x:DataType="models:TreeItem">
+        <TreeView Grid.Column="1" ItemsSource="{x:Bind ViewModel.Resolved}" SelectionMode="None"
+                  CanDragItems="False" Margin="8" ItemTemplateSelector="{StaticResource Selector}" />
+        <!--<TreeView.ItemTemplate>
+                <DataTemplate x:DataType="models:ITreeNode">
                     <TreeViewItem ItemsSource="{x:Bind Children}" Content="{x:Bind Content}" AllowDrop="False"
                                   IsExpanded="True" CanDrag="False" />
                 </DataTemplate>
-            </TreeView.ItemTemplate>
-        </TreeView>
+            </TreeView.ItemTemplate>-->
     </Grid>
 
     <Page.Resources>
 
+        <tree:Selector x:Key="Selector">
+            <tree:Selector.ItemTemplate>
+                <DataTemplate x:DataType="models:TreeLeaf">
+                    <TreeViewItem Content="{x:Bind Content}" />
+                </DataTemplate>
+            </tree:Selector.ItemTemplate>
+            <tree:Selector.NodeTemplate>
+                <DataTemplate x:DataType="models:TreeInternal">
+                    <TreeViewItem ItemsSource="{x:Bind Children}" Content="{x:Bind Content}" />
+                </DataTemplate>
+            </tree:Selector.NodeTemplate>
+        </tree:Selector>
     </Page.Resources>
 
 </Page>

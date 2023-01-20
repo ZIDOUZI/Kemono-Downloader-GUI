@@ -46,7 +46,6 @@
         <None Update="appsettings.json">
             <CopyToOutputDirectory>Always</CopyToOutputDirectory>
         </None>
-        <None Remove="Models\Tree\**" />
         <None Remove="obj\**" />
         <None Remove="Kemono_TemporaryKey.pfx" />
     </ItemGroup>
@@ -69,19 +68,19 @@
     </ItemGroup>
 
     <ItemGroup>
-        <Page Remove="Models\Tree\**" />
         <Page Remove="obj\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <Compile Remove="Models\Tree\**" />
         <Compile Remove="obj\**" />
         <Compile Remove="Helpers\BackdropHelper.cs" />
         <Compile Remove="Helpers\WindowsSystemDIspatcherQueueHelper.cs" />
+        <Compile Include="Models\Tree\ArtistUI.cs" />
+        <Compile Include="Models\Tree\PostUI.cs" />
+        <Compile Include="Models\Tree\WebFileUI.cs" />
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Remove="Models\Tree\**" />
         <EmbeddedResource Remove="obj\**" />
     </ItemGroup>
 

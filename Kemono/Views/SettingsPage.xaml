@@ -136,7 +136,7 @@
 
                     <models:SettingItem x:Uid="DefaultRpcHost">
                         <TextBox HorizontalAlignment="Left" MinWidth="200" Text="{x:Bind ViewModel.Host,Mode=TwoWay}"
-                                 PlaceholderText="http://localhost:6800" />
+                                 PlaceholderText="http://localhost:6800/jsonrpc" />
                     </models:SettingItem>
 
                     <models:SettingItem PrimaryText="RPC token">

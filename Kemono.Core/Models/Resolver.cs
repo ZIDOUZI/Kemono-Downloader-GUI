@@ -247,6 +247,31 @@ public class Resolver
         )
         + file.Extension;
 
+    public IEnumerable<WebFile> GetFiles(Post post)
+    {
+        if (post.File.Path != null)
+        {
+            post.File.Index = 0;
+            post.File.UseRpc = HaveRpc;
+            yield return post.File;
+        }
+
+        for (var j = 0; j < post.Attachments.Count;)
+        {
+            var file = post.Attachments[j++];
+            file.Index = j;
+            yield return file;
+        }
+
+        // TODO: 需要示例
+        var i = post.Attachments.Count;
+        foreach (Match match in ImgReg.Matches(post.Content))
+        {
+            var name = match.Groups[1].Value;
+            yield return new WebFile {Name = Uuid + Path.GetExtension(name), Path = match.Groups[1].Value, Index = ++i};
+        }
+    }
+
     private IEnumerable<WebFile> Filter(Post post)
     {
 
