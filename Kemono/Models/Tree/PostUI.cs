@@ -10,8 +10,11 @@ namespace Kemono.Models.Tree;
 
 public sealed class PostUI : TreeInternal
 {
+    public Post Post { get; }
+
     public PostUI(Post post, IEnumerable<WebFileUI> files) : base(files)
     {
+        Post = post;
         var download = new SymbolIcon(Symbol.Download);
         var useRpc = new SymbolIcon(Symbol.Remote);
 

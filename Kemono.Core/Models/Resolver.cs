@@ -290,28 +290,19 @@ public class Resolver
         }
     }
 
-    public Artist Parse(Post post) =>
-        GetArtist(a => a.Id == post.User).SetPosts(
-            post.SetFiles(Filter(post).Select(file => file.Apply(f =>
-                    {
-                        f.File = Format(post, file);
-                        f.Url = $"{_domain}/data{file.Path!}";
-                    })
-                )
-            )
-        );
+    public Artist Parse(Post post) => GetArtist(a => a.Id == post.User);
 
-    public async Task<Artist> Parse(Artist artist) => artist.SetPosts(
-        (await GetPosts(artist)).Select(post => post.SetFiles(
-                Filter(post).Select(file => file.Apply(f =>
-                    {
-                        f.File = Format(post, file);
-                        f.Url = $"{_domain}/data{file.Path!}";
-                    })
-                )
-            )
-        )
-    );
+    // public async Task<Artist> Parse(Artist artist) => artist.SetPosts(
+    //     (await GetPosts(artist)).Select(post => post.SetFiles(
+    //             Filter(post).Select(file => file.Apply(f =>
+    //                 {
+    //                     f.File = Format(post, file);
+    //                     f.Url = $"{_domain}/data{file.Path!}";
+    //                 })
+    //             )
+    //         )
+    //     )
+    // );
 
     /// <summary>
     /// </summary>
@@ -331,7 +322,7 @@ public class Resolver
 
         return url.Segments.Length switch
         {
-            4 => await Parse(artist),
+            4 => artist,
             6 => Parse(await GetPost(service, user, url.Segments[5].TrimEnd('/'))),
             _ => throw new ArgumentException(url.OriginalString)
         };

@@ -11,8 +11,11 @@ namespace Kemono.Models.Tree;
 
 public sealed class ArtistUI : TreeInternal
 {
+    public Artist Artist { get; }
+
     public ArtistUI(Artist artist, IEnumerable<PostUI> posts) : base(posts)
     {
+        Artist = artist;
         var download = new SymbolIcon(Symbol.Download);
         var useRpc = new SymbolIcon(Symbol.Remote);
 

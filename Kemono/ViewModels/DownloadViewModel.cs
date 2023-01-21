@@ -11,7 +11,7 @@ namespace Kemono.ViewModels;
 
 public class DownloadViewModel : InjectScopeViewModel
 {
-    private ObservableCollection<Artist> _artists = new();
+    // private ObservableCollection<Artist> _artists = new();
 
     public Resolver Resolver = null!;
     private ObservableCollection<ArtistUI> _resolved = new();
@@ -23,9 +23,9 @@ public class DownloadViewModel : InjectScopeViewModel
         set => SetProperty(ref _resolved, value);
     }
 
-    public ObservableCollection<Artist> Artists
-    {
-        get => _artists;
-        set => SetProperty(ref _artists, value);
-    }
+    // public ObservableCollection<Artist> Artists
+    // {
+    //     get => _artists;
+    //     set => SetProperty(ref _artists, value);
+    // }
 }

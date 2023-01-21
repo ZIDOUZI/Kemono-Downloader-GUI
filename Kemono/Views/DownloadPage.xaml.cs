@@ -33,8 +33,9 @@ public sealed partial class DownloadPage : Page
     private static readonly Regex UrlRegex = new(@"http(s)?://([\w-]+\.)+[\w-]+(/[\w- ./?%&=]*)?");
 
     private IDownload? _d;
+
     private DownloadPackage? _interrupt;
-    private IEnumerator<Artist> _e = null!;
+    // private IEnumerator<Artist> _e = null!;
 
     private bool _finished;
     private IServiceScope? _scope;
@@ -43,6 +44,8 @@ public sealed partial class DownloadPage : Page
     private DownloadViewModel Vm = null!;
     private static readonly Thickness Zero = new(0);
     private static readonly Thickness Default = new(24, 8, 4, 8);
+
+    private int[] _posotion = new int[3];
 
     private static ContentDialog ErrorDialog => new()
         {XamlRoot = App.GlobalRoot, Title = "未知错误", SecondaryButtonText = "确认"};
@@ -115,6 +118,11 @@ public sealed partial class DownloadPage : Page
     public async Task<ArtistUI> GetArtist(Artist artist) =>
         new(artist, from post in await Vm.Resolver.GetPosts(artist) select GetPosts(post));
 
+    public async IAsyncEnumerable<ArtistUI> GetArtists(IEnumerable<Artist> artists)
+    {
+        foreach (var artist in artists) yield return await GetArtist(artist);
+    }
+
     public PostUI GetPosts(Post post) =>
         new(post, Vm.Resolver.GetFiles(post).Select(file => new WebFileUI(file, Vm.HaveRpc)));
 
@@ -175,18 +183,18 @@ public sealed partial class DownloadPage : Page
     }
 
     // Async 关键词问题
-    private Task ResetEnumerator() => Task.Run(() =>
-    {
-        _e.Reset();
-        foreach (var artist in Vm.Artists)
-        {
-            artist.Enumerator.Reset();
-            foreach (var post in artist.Posts)
-            {
-                post.Enumerator.Reset();
-            }
-        }
-    });
+    // private Task ResetEnumerator() => Task.Run(() =>
+    // {
+    //     _e.Reset();
+    //     foreach (var artist in Vm.Artists)
+    //     {
+    //         artist.Enumerator.Reset();
+    //         foreach (var post in artist.Posts)
+    //         {
+    //             post.Enumerator.Reset();
+    //         }
+    //     }
+    // });
 
     private static void ShowNotification(AppNotification notification) => throw new NotImplementedException();
 
@@ -198,12 +206,10 @@ public sealed partial class DownloadPage : Page
     {
         try
         {
-            Vm.Artists = new ObservableCollection<Artist>(
-                await (await Vm.Resolver.GetFavoriteArtists()).Select(async artist =>
-                    await Vm.Resolver.Parse(artist)
-                )
+            Vm.Resolved = new ObservableCollection<ArtistUI>(
+                GetArtists(await Vm.Resolver.GetFavoriteArtists()).ToEnumerable()
             );
-            Add(new TextBlock {Text = $"已加载{Vm.Artists.Count}个画师"});
+            Add(new TextBlock {Text = $"已加载{Vm.Resolved.Count}个画师"});
         }
         catch (Exception exception)
         {
@@ -217,12 +223,13 @@ public sealed partial class DownloadPage : Page
     {
         try
         {
-            Vm.Artists = new ObservableCollection<Artist>(
-                (await Vm.Resolver.GetFavoritePosts()).Select(post =>
-                    Vm.Resolver.Parse(post).SetPosts(post)
-                )
+            Vm.Resolved = new ObservableCollection<ArtistUI>(
+                (await Vm.Resolver.GetFavoritePosts())
+                .GroupBy(post => Vm.Resolver.Parse(post))
+                .Select(g => new ArtistUI(g.Key, g.Select(p => Vm.Resolver.GetFiles(p, Vm.HaveRpc))))
             );
-            Add(new TextBlock {Text = $"已加载{Vm.Artists.Count}篇收藏贴"});
+
+            Add(new TextBlock {Text = $"已加载{Vm.Resolved.Count}篇收藏贴"});
         }
         catch (Exception exception)
         {
@@ -240,7 +247,7 @@ public sealed partial class DownloadPage : Page
 
         _vm.Text = "正在解析";
         Console.WriteLine("I: Start Resolve");
-        Vm.Artists = new ObservableCollection<Artist>();
+        Vm.Resolved = new ObservableCollection<ArtistUI>();
 
         foreach (var url in UrlBox.Text.Split('\n'))
         {
@@ -254,8 +261,9 @@ public sealed partial class DownloadPage : Page
             {
                 // TODO: 解析pixiv, fanbox等链接
                 var artist = await Vm.Resolver.Parse(new Uri(url.Trim()));
-                Vm.Artists.Add(artist);
-                Add(new TextBlock {Text = $"成功解析画师{artist.Name}({artist.Id}, 共{artist.Posts.Count}篇post"});
+                var au = await GetArtist(artist);
+                Vm.Resolved.Add(au);
+                Add(new TextBlock {Text = $"成功解析画师{artist.Name}({artist.Id}, 共{au.Children.Count}篇post"});
             }
             catch (AmbiguousMatchException e)
             {
@@ -270,10 +278,10 @@ public sealed partial class DownloadPage : Page
             }
         }
 
-        _e = Vm.Artists.GetEnumerator();
+        // _e = Vm.Artists.GetEnumerator();
 
         Solve.IsEnabled = true;
-        Download.IsEnabled = Vm.Artists.Any();
+        Download.IsEnabled = Vm.Resolved.Any();
         Load.IsEnabled = Vm.Resolver.LoggedIn;
         Ring.IsIndeterminate = false;
         _vm.Text = "解析完成";
@@ -292,6 +300,72 @@ public sealed partial class DownloadPage : Page
         Load.IsEnabled = false;
         _finished = Ring.IsIndeterminate = Interrupt.IsEnabled = true;
 
+        var node = new YamlMappingNode();
+
+        foreach (var a in Vm.Resolved)
+        {
+            var artist = a.Artist;
+            if (a.Download.IsChecked == false)
+            {
+                Console.WriteLine($"I: 已跳过画师{artist.Name}: 未勾选.");
+                break;
+            }
+
+            if (!Downloading) break;
+
+            Add(new TextBlock {Text = $"├当前画师: {artist.Name}[{artist.Service}-{artist.Id}]", Tag = true});
+            Console.WriteLine($"I: Current artist: {artist.Name}");
+
+            var map = new YamlMappingNode();
+
+            await foreach (var (title, sequence) in DealArtist(artist))
+            {
+                if (!Downloading)
+                {
+                    break;
+                }
+
+                map.Add(title, sequence);
+            }
+
+            if (map.Any()) node.Add(artist.Name, map);
+        }
+
+        if (node.Any())
+        {
+            await _writer.WriteLineAsync("---");
+            await _writer.WriteLineAsync($"# {DateTime.Now}");
+            Serializer.Serialize(_writer, node);
+            await _writer.WriteLineAsync("...");
+            var b = new HyperlinkButton {Content = "保存url成功. 点击打开目录", Padding = Zero};
+            b.Click += (_, _) => Process.Start("explorer", Vm.Resolver.DefaultPath);
+            Add(b);
+        }
+
+        if (App.Settings.ClearSucceedInfos)
+        {
+            Infos.Children.DropWhere(e => e is FrameworkElement {Tag: true});
+        }
+
+        if (_finished)
+        {
+            // _e.Reset();
+            // await Task.Run(() => Vm.Artists.ForEach(artist =>
+            // {
+            //     artist.Enumerator.Reset();
+            //     artist.Posts.ForEach(post => post.Enumerator.Reset());
+            // }));
+            _vm.Text = "下载完成";
+            Add(new TextBlock {Text = "下载已完成"});
+        }
+        else
+        {
+            return;
+        }
+
+        Solve.IsEnabled = Download.IsEnabled = true;
+        Load.IsEnabled = Vm.Resolver.LoggedIn;
+        Ring.IsIndeterminate = Interrupt.IsEnabled = false;
         foreach (var obj in Vm.Resolved)
         {
         }
@@ -302,9 +376,6 @@ public sealed partial class DownloadPage : Page
 
     private async IAsyncEnumerable<(string title, YamlSequenceNode sequence)> DealArtist(Artist artist)
     {
-        Add(new TextBlock {Text = $"├当前画师: {artist.Name}[{artist.Service}-{artist.Id}]", Tag = true});
-        Console.WriteLine($"I: Current artist: {artist.Name}");
-
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         async Task<(string title, YamlSequenceNode? sequence)> ForPost(Post post) =>
             (post.Title, await DealPost(post));

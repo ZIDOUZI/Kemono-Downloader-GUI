@@ -20,7 +20,13 @@ public sealed class WebFileUI : TreeLeaf
                 new TextBlock{Text = $"{file.Name}", VerticalAlignment = VerticalAlignment.Center}
             }
         };
+        File = file;
     }
 
     public override object Content { get; set; }
+    public WebFile File { get; }
+
+    public TextBlock Text = new (){Text = $"││├准备下载文件 {File.Name}."};
+
+    public ProgressRing Ring = new(){Margin = new Thickness(24,8,4,8)};
 }
