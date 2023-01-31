@@ -28,6 +28,7 @@
 ## 致谢
 
 感谢墨菲安全提供的代码库安全性报告
+
 [![Security Status](https://www.murphysec.com/platform3/v3/badge/1619785080076009472.svg?t=1)](https://www.murphysec.com/accept?code=7a68fe581ced0d2a7bb0a578b18c8382&type=1&from=2&t=2)
 
 感谢Visual Studio和Jetbrains Rider提供的集成开发环境.
